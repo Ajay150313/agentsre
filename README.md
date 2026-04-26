@@ -16,8 +16,21 @@ And it's making wrong decisions 30% of the time.
 Your current observability stack won't tell you.
 
 **agentsre** implements the four SLIs that catch what CloudWatch, Datadog, and Grafana miss — plus an A2A semantic boundary validator and agent chain circuit breaker for multi-agent systems.
+## Why This Exists: A Real Postmortem
 
----
+We had an AI agent managing payment routing in production. It ran for 6 hours making bad decisions before it caused an outage.
+
+Here's the weird part: every metric was green. HTTP 200 responses. 99.99% uptime. P99 latency 142ms. CloudWatch said everything was healthy. Datadog said everything was healthy. PagerDuty didn't page anyone.
+
+But the agent was falling apart.
+
+Tool Invocation Efficiency went from 2.1 calls per task to 6.8 (3x normal). The approval queue grew from 12 pending items to 847. Decision confidence dropped from 0.92 to 0.41. And humans were rejecting 19% of decisions instead of the normal 1.2%.
+
+None of that triggered an alert.
+
+That's because traditional observability measures infrastructure. Network latency, error rates, uptime. But AI agents don't fail at the infrastructure layer. They fail at the semantic layer. Wrong decision, right HTTP 200.
+
+We built agentsre after that outage. It measures what actually matters for agents.
 
 ## The problem
 
