@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "agentsre"
+version = "0.1.0"
+description = "SRE reliability instrumentation for agentic AI systems — DQR, TIE, HER, AQDD"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Ajay Devineni" }]
+keywords = [
+    "sre", "ai-agents", "observability", "reliability", "mcp",
+    "a2a", "agentic-ai", "slo", "sli", "cloudwatch",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: System :: Monitoring",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+aws = ["boto3>=1.26"]
+dev = ["pytest>=7", "pytest-cov", "black", "ruff", "mypy"]
+
+[project.urls]
+Homepage = "https://github.com/ajay-devineni/agentsre"
+Documentation = "https://github.com/ajay-devineni/agentsre#readme"
+"Bug Tracker" = "https://github.com/ajay-devineni/agentsre/issues"
+
+[tool.setuptools.packages.find]
+include = ["agentsre*"]
