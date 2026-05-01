@@ -5,7 +5,17 @@
 [![PyPI version](https://img.shields.io/pypi/v/agentsre.svg)](https://pypi.org/project/agentsre/)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://pypi.org/project/agentsre/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://github.com/ajay-devineni/agentsre/actions/workflows/tests.yml/badge.svg)](https://github.com/ajay-devineni/agentsre/actions)
+[![Tests](https://github.com/Ajay150313/agentsre/actions/workflows/tests.yml/badge.svg)](https://github.com/Ajay150313/agentsre/actions)
+
+---
+
+## Latest
+
+📝 **[Agent Sprawl is Your Next Production Incident](https://www.linkedin.com/posts/ajay-devineni_agenticai-sre-reliability-ugcPost-7455786901673902080-BCRM)** — LinkedIn (April 30, 2026)
+
+📄 **[Governing Agent Sprawl on AWS](https://builder.aws.com/content/3D6NGmNr6iymtUqZn6lSWcvY09X/governing-agent-sprawl-on-aws-fleet-inventory-framework-canary-and-deprecation-alerting-for-multi-model-bedrock-deployments)** — AWS Community Builders
+
+✍️ **[Agent Sprawl: SRE Response to Datadog's State of AI Engineering 2026](https://dev.to/ajaydevineni/agent-sprawl-is-your-next-production-incident-an-sre-response-to-datadogs-state-of-ai-engineering-3k83)** — DEV Community
 
 ---
 
@@ -15,35 +25,41 @@ And it's making wrong decisions 30% of the time.
 
 Your current observability stack won't tell you.
 
-**agentsre** implements the four SLIs that catch what CloudWatch, Datadog, and Grafana miss — plus an A2A semantic boundary validator and agent chain circuit breaker for multi-agent systems.
+**agentsre** implements the four SLIs that catch what CloudWatch, Datadog, and Grafana miss — plus an A2A semantic boundary validator, agent chain circuit breaker, and Agent Sprawl governance module for multi-model, multi-framework production deployments.
+
+---
+
 ## Why This Exists: A Real Postmortem
 
-We had an AI agent managing payment routing in production. It ran for 6 hours making bad decisions before it caused an outage.
+An AI agent in a production environment ran for 6 hours making bad decisions before it caused an outage.
 
-Here's the weird part: every metric was green. HTTP 200 responses. 99.99% uptime. P99 latency 142ms. CloudWatch said everything was healthy. Datadog said everything was healthy. PagerDuty didn't page anyone.
+Every metric was green. HTTP 200 responses. 99.99% uptime. P99 latency 142ms. CloudWatch healthy. Datadog healthy. PagerDuty silent.
 
-But the agent was falling apart.
+But the agent was failing at the semantic layer:
 
-Tool Invocation Efficiency went from 2.1 calls per task to 6.8 (3x normal). The approval queue grew from 12 pending items to 847. Decision confidence dropped from 0.92 to 0.41. And humans were rejecting 19% of decisions instead of the normal 1.2%.
+- Tool Invocation Efficiency: 2.1 calls/task → 6.8 (3× normal)
+- Approval queue: 12 pending → 847 pending
+- Decision confidence: 0.92 → 0.41
+- Human rejection rate: 1.2% → 19%
 
-None of that triggered an alert.
+None of that triggered an alert. Traditional observability measures infrastructure. AI agents fail at the **semantic layer** — wrong decision, right HTTP 200.
 
-That's because traditional observability measures infrastructure. Network latency, error rates, uptime. But AI agents don't fail at the infrastructure layer. They fail at the semantic layer. Wrong decision, right HTTP 200.
+That's why this library exists.
 
-We built agentsre after that outage. It measures what actually matters for agents.
+---
 
-## The problem
-
-Traditional SLIs measure infrastructure-layer signals: latency, error rate, availability. AI agents fail at the **semantic layer** — wrong tool selection, context misinterpretation, output drift. These failures produce no HTTP errors. Your dashboards stay green.
+## The Problem
 
 ```
-Agent returns HTTP 200 ✓          — standard SLIs: healthy
-Agent confidence drops from 92% to 41% — standard SLIs: healthy  
-Agent making 6 tool calls instead of 2  — standard SLIs: healthy
-Agent escalating 18% of tasks vs 3%     — standard SLIs: healthy
+Agent returns HTTP 200 ✓               — standard SLIs: healthy
+Agent confidence drops 92% → 41%      — standard SLIs: healthy
+Agent making 6 tool calls instead of 2 — standard SLIs: healthy
+Agent escalating 18% of tasks vs 3%   — standard SLIs: healthy
 ```
 
-## The four SLIs
+---
+
+## The Four SLIs
 
 | SLI | What it catches | Layer |
 |-----|----------------|-------|
@@ -52,7 +68,7 @@ Agent escalating 18% of tasks vs 3%     — standard SLIs: healthy
 | **Human Escalation Rate (HER)** | Direct operational cost of unreliability | Lagging proxy |
 | **Approval Queue Depth Drift (AQDD)** | Human-blocked tasks; queue silently growing¹ | Missing entirely |
 
-> ¹ *AQDD is the failure mode standard SLO burn-rate alerts miss entirely: work submitted, never approved, queue depth growing while your dashboards show nothing. Introduced in [this LinkedIn discussion](https://linkedin.com/in/ajay-devineni).*
+> ¹ *AQDD is the failure mode standard SLO burn-rate alerts miss entirely: work submitted, never approved, queue depth growing while dashboards show nothing. Introduced in [this LinkedIn discussion](https://www.linkedin.com/posts/ajay-devineni_agenticai-sre-reliability-ugcPost-7455786901673902080-BCRM).*
 
 ---
 
@@ -63,14 +79,13 @@ pip install agentsre          # core — zero dependencies
 pip install agentsre[aws]     # + boto3 for CloudWatch publishing
 ```
 
-## Quick start
+## Quick Start
 
 ```python
 from agentsre import AgentSLICollector, TaskRecord
 
 collector = AgentSLICollector()
 
-# Record each task your agent completes
 collector.record(TaskRecord(
     task_id="t-001",
     task_class="payment-routing",
@@ -81,15 +96,13 @@ collector.record(TaskRecord(
     completed=True,
 ))
 
-# Get all four SLIs
 for result in collector.collect("payment-routing"):
     print(result)
-# [DecisionQualityRate]       payment-routing: 91.0%       🟢
-# [ToolInvocationEfficiency]  payment-routing: 3.0 calls   🟢
-# [HumanEscalationRate]       payment-routing: 0.0%        🟢
-# [ApprovalQueueDepthDrift]   payment-routing: 0 pending   🟢
+# [DecisionQualityRate]       payment-routing: 91.0%      🟢
+# [ToolInvocationEfficiency]  payment-routing: 3.0 calls  🟢
+# [HumanEscalationRate]       payment-routing: 0.0%       🟢
+# [ApprovalQueueDepthDrift]   payment-routing: 0 pending  🟢
 
-# Only get breaches
 if collector.breached("payment-routing"):
     alert_oncall()
 ```
@@ -99,17 +112,17 @@ if collector.breached("payment-routing"):
 ```python
 from agentsre.cloudwatch import CloudWatchPublisher
 
-publisher = CloudWatchPublisher(agent_id="financial-processor")
+publisher = CloudWatchPublisher(agent_id="my-agent")
 publisher.publish(collector.collect("payment-routing"))
-# → Namespace: AgentReliability
-# → Metrics:   DecisionQualityRate, ToolInvocationEfficiency,
-#              HumanEscalationRate, ApprovalQueueDepthDrift
-# → Dimensions: AgentId=financial-processor, TaskClass=payment-routing
+# → Namespace:  AgentReliability
+# → Metrics:    DecisionQualityRate, ToolInvocationEfficiency,
+#               HumanEscalationRate, ApprovalQueueDepthDrift
+# → Dimensions: AgentId=my-agent, TaskClass=payment-routing
 ```
 
-## A2A semantic boundary validation
+## A2A Semantic Boundary Validation
 
-Catches the failure mode A2A multi-agent systems introduce: HTTP 200, valid JSON — but semantically wrong output that silently propagates through your agent chain.
+Catches the multi-agent failure mode where HTTP 200s mask semantically wrong output propagating through your agent chain.
 
 ```python
 from agentsre import A2ASemanticValidator
@@ -128,13 +141,12 @@ result = validator.validate(
 )
 
 if not result.valid:
-    # Do NOT pass to orchestrator
-    route_to_escalation(result)
+    route_to_escalation(result)  # do NOT pass to orchestrator
 ```
 
-## Agent chain circuit breaker
+## Agent Chain Circuit Breaker
 
-Operates at the semantic layer — opens when validated success rate drops, not when HTTP errors spike.
+Operates at the semantic validation success rate — not the HTTP success rate.
 
 ```python
 from agentsre import AgentChainCircuitBreaker
@@ -145,75 +157,112 @@ breaker = AgentChainCircuitBreaker(
     on_state_change=lambda s: page_oncall(s),
 )
 
-# Before each A2A delegation:
 if not breaker.allow_request("risk-agent-v2", "risk-assessment"):
-    return degraded_mode_handler(task)   # circuit is OPEN
+    return degraded_mode_handler(task)
 
-# After validating the result:
 breaker.record_result("risk-agent-v2", "risk-assessment", success=validation.valid)
+```
+
+## Agent Sprawl Governance (v0.2.0)
+
+Governs the condition where AI agent complexity grows faster than your ability to measure and govern its reliability.
+
+```python
+from agentsre.sprawl import AgentFleetInventory, FleetComponent, ComponentType
+from agentsre.sprawl import FrameworkVersionGovernance, UpgradeDecision
+
+# Fleet inventory with SLO ownership + deprecation tracking
+inventory = AgentFleetInventory()
+inventory.register(FleetComponent(
+    component_id="anthropic.claude-sonnet-4-6",
+    component_type=ComponentType.MODEL,
+    agent_id="payment-processor",
+    task_classes=["payment-routing"],
+    slo_owner="owner@team.com",          # named human — not a team
+    baseline_established_at="2026-04-01",
+    deprecation_date="2027-06-01",
+    last_slo_review="2026-04-01",
+    current_tie_baseline=2.4,
+    current_dqr_baseline=91.2,
+))
+
+print(inventory.summary())
+alerts = inventory.pending_deprecation_alerts()  # fires at 60/30/7 days
+report = inventory.quarterly_review_report()     # P0-P3 action items
+
+# Framework upgrade canary — blocks promotion if TIE drifts >15%
+gov = FrameworkVersionGovernance(tie_drift_threshold=1.15, dqr_drift_threshold=0.85)
+gov.snapshot_baseline("payment-processor", "payment-routing", "langchain-0.2.x",
+                       tie_values=[2.1, 2.3, 2.0], dqr_values=[91.2, 89.5, 92.0])
+
+result = gov.evaluate_upgrade("payment-processor", "payment-routing",
+                               "langchain-0.2.x", "langchain-0.3.x")
+if result.decision == UpgradeDecision.BLOCK:
+    rollback()  # framework added hidden overhead — don't promote
 ```
 
 ---
 
-## SLO targets — where to start
+## SLO Targets — Where to Start
 
-| SLI | Conservative target | Aggressive target |
-|-----|-------------------|-------------------|
+| SLI | Conservative | Aggressive |
+|-----|-------------|-----------|
 | DQR | > 85% | > 92% |
 | TIE | < 1.5× baseline | < 1.2× baseline |
 | HER | < 5% | < 2% |
-| AQDD | < 2× baseline depth | < 1.5× baseline depth |
+| AQDD | < 2× baseline | < 1.5× baseline |
 
 **Rule:** Run a 30-day observation window before committing to any SLO target. You cannot commit to reliability you have not yet measured.
 
 ---
 
-## Progressive autonomy constraint ladder
-
-When SLIs breach, don't kill the agent — reduce autonomy progressively:
+## Progressive Autonomy Constraint Ladder
 
 ```
 Level 1 — DQR drops 15% or TIE hits 1.5× baseline
-         Enhanced logging. No autonomy reduction.
+          Enhanced logging. No autonomy reduction.
 
-Level 2 — DQR drops 25% or TIE hits 2× baseline  
-         Human approval required for write operations.
+Level 2 — DQR drops 25% or TIE hits 2× baseline
+          Human approval required for write operations.
 
 Level 3 — HER exceeds 2× target
-         Read-only mode. All writes require explicit authorization.
+          Read-only mode. All writes require explicit authorization.
 
 Level 4 — Level 3 sustained for 30+ minutes
-         Suspend autonomous operation. Page on-call.
+          Suspend autonomous operation. Page on-call.
 ```
 
-See [`examples/progressive_constraints.py`](examples/) for the AWS SSM Automation implementation.
-
 ---
 
-## AWS architecture
+## AWS Architecture
 
-Full implementation guide on AWS Community Builders:  
-→ [Single-agent + MCP: SLOs for Agentic AI on AWS](https://community.aws)  
-→ [Multi-agent + A2A: The SRE Reliability Framework Nobody Has Written Yet](https://community.aws)
+Full implementation guides on AWS Community Builders:
 
-Key services used:
-- **CloudWatch Custom Metrics** — DQR, TIE, HER, AQDD per task class
-- **DynamoDB** — behavioral baseline store with 7-day rolling window
-- **EventBridge** — breach-triggered investigation workflows
+→ **[Governing Agent Sprawl on AWS: Fleet Inventory, Framework Canary, Deprecation Alerting](https://builder.aws.com/content/3D6NGmNr6iymtUqZn6lSWcvY09X/governing-agent-sprawl-on-aws-fleet-inventory-framework-canary-and-deprecation-alerting-for-multi-model-bedrock-deployments)**
+
+Key AWS services:
+- **CloudWatch Custom Metrics** — DQR, TIE, HER, AQDD per task class + per model
+- **DynamoDB** — behavioral baseline store + agent fleet inventory
+- **EventBridge** — breach-triggered investigation workflows + deprecation alerts
 - **SSM Automation** — progressive autonomy constraint ladder
 - **X-Ray** — distributed tracing across A2A agent boundaries
+- **CodePipeline** — framework upgrade canary gate
 
 ---
 
-## The story behind this library
+## Related Writing
 
-This library emerged from a production postmortem. An AI agent in a regulated financial services environment ran for **6 hours in silent failure mode** — no alerts, no pages, zero CloudWatch alarms — before causing a 40-minute outage.
+**LinkedIn:**
+- [Agent Sprawl is Your Next Production Incident](https://www.linkedin.com/posts/ajay-devineni_agenticai-sre-reliability-ugcPost-7455786901673902080-BCRM) *(April 30, 2026)*
+- [A2A + MCP in Production: The SRE Reliability Framework Nobody Has Written Yet](https://www.linkedin.com/in/ajay-devineni/)
+- [SLOs for Agentic AI: The Reliability Framework Production Teams Are Missing](https://www.linkedin.com/in/ajay-devineni/)
 
-The agent's Tool Invocation Efficiency had climbed from 2.1 to 6.8 calls per task. A degraded upstream service was returning ambiguous responses; the agent compensated by invoking 3× more tools. Task completion rate: 99%. Health checks: green. Every SLI we had: healthy.
+**DEV Community:**
+- [Agent Sprawl: SRE Response to Datadog's State of AI Engineering 2026](https://dev.to/ajaydevineni/agent-sprawl-is-your-next-production-incident-an-sre-response-to-datadogs-state-of-ai-engineering-3k83)
+- [Why SRE Principles Are the Missing Layer in MCP Security](https://dev.to/ajaydevineni/why-sre-principles-are-the-missing-layer-in-mcp-security-2fo8)
 
-The data was there. The SLI wasn't.
-
-That's why this library exists.
+**AWS Community Builders:**
+- [Governing Agent Sprawl on AWS](https://builder.aws.com/content/3D6NGmNr6iymtUqZn6lSWcvY09X/governing-agent-sprawl-on-aws-fleet-inventory-framework-canary-and-deprecation-alerting-for-multi-model-bedrock-deployments)
 
 ---
 
@@ -222,18 +271,10 @@ That's why this library exists.
 PRs welcome — especially:
 - **Alternative cloud implementations** — GCP (Cloud Monitoring), Azure (Application Insights)
 - **Framework integrations** — LangChain, CrewAI, AutoGen, Amazon Bedrock Agents, LlamaIndex
-- **Additional task-class baseline examples** for common agent patterns
 - **Prometheus exporter** — `/metrics` endpoint for self-hosted deployments
+- **Additional task-class baseline examples**
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
-
----
-
-## Related writing
-
-- [SLOs for Agentic AI: The Reliability Framework Production Teams Are Missing](https://dev.to/ajaydevineni) — DEV Community
-- [Why SRE Principles Are the Missing Layer in MCP Security](https://dev.to/ajaydevineni) — DEV Community  
-- [Multi-Agent Reliability on AWS: Building SRE Infrastructure for A2A + MCP](https://community.aws) — AWS Community Builders
 
 ---
 
