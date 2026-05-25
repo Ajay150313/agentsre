@@ -1,28 +1,29 @@
 """
 Cost Optimizer Module for agentsre
 
-Tracks, analyzes, and optimizes costs for AI agents in production.
-
-Features:
-- Real-time cost tracking across OpenAI, Anthropic, Bedrock
-- Cost per agent, cost per task, cost per operation
-- Optimization recommendations (model routing, batch API, caching)
-- Budget alerts and hard limits
-- Cost anomaly detection
+Tracks and optimizes costs for AI agents in production.
 
 Author: Ajay Devineni
 License: MIT
 """
 
-from .tracker import CostTracker, CostMetrics
-from .optimizer import CostOptimizer, OptimizationSuggestion
-from .alerts import BudgetAlert, AlertManager as CostAlertManager
+__version__ = "0.5.0"
+__author__ = "Ajay Devineni"
 
-__all__ = [
-    "CostTracker",
-    "CostMetrics",
-    "CostOptimizer",
-    "OptimizationSuggestion",
-    "BudgetAlert",
-    "CostAlertManager",
-]
+# Import classes but catch import errors gracefully
+try:
+    from .tracker import CostTracker, CostMetrics
+    from .optimizer import CostOptimizer, OptimizationSuggestion
+    from .alerts import BudgetAlert, CostAlertManager
+    
+    __all__ = [
+        "CostTracker",
+        "CostMetrics", 
+        "CostOptimizer",
+        "OptimizationSuggestion",
+        "BudgetAlert",
+        "CostAlertManager",
+    ]
+except ImportError as e:
+    print(f"Warning: Could not import cost_optimizer modules: {e}")
+    __all__ = []

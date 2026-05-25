@@ -303,3 +303,40 @@ Production system for coordinating AI agents in payment processing.
 Catches semantic failures (wrong decisions despite HTTP 200) 48+ hours before traditional SLIs fire.
 
 See [FINTECH_ORCHESTRATION.md](agentsre/FINTECH_ORCHESTRATION.md) for details.
+
+---
+
+## v0.5.0: Cost Optimization Module
+
+Production cost tracking for AI agents.
+
+**Features:**
+- Real-time cost tracking (OpenAI, Anthropic models)
+- Cost per agent, cost per task
+- Optimization recommendations
+- Budget alerts
+
+**Quick start:**
+
+```python
+from agentsre.cost_optimizer import CostTracker, CostOptimizer
+
+tracker = CostTracker()
+
+# Track API calls
+tracker.track_api_call(
+    agent_id="payment-router",
+    model="claude-opus",
+    input_tokens=1000,
+    output_tokens=500
+)
+
+# Get metrics
+metrics = tracker.get_metrics("payment-router")
+print(f"Cost per call: ${metrics.cost_per_call():.4f}")
+
+# Get suggestions
+optimizer = CostOptimizer(tracker)
+suggestions = optimizer.analyze()
+```
+

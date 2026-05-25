@@ -1,49 +1,37 @@
 """
-Budget alerts and monitoring for cost control
+Budget alerts for cost control
 
 Author: Ajay Devineni
 License: MIT
 """
 
-from dataclasses import dataclass
-from typing import Callable, Optional
-from datetime import datetime
-from enum import Enum
 
-
-class AlertSeverity(Enum):
-    INFO = "info"
-    WARNING = "warning"
-    CRITICAL = "critical"
-
-
-@dataclass
 class BudgetAlert:
     """Budget alert"""
-    severity: AlertSeverity
-    message: str
-    current_spend: float
-    budget_limit: float
-    timestamp: datetime
+    
+    def __init__(self, severity: str, message: str, current: float, limit: float):
+        self.severity = severity
+        self.message = message
+        self.current = current
+        self.limit = limit
 
 
-class AlertManager:
-    """Manage budget alerts"""
+class CostAlertManager:
+    """Manage cost alerts"""
     
     def __init__(self):
         self.alerts = []
         self.handlers = []
     
-    def add_handler(self, handler: Callable) -> None:
-        """Add alert handler (e.g., Slack, email)"""
+    def add_handler(self, handler):
+        """Add alert handler"""
         self.handlers.append(handler)
     
-    def send_alert(self, alert: BudgetAlert) -> None:
-        """Send alert to all handlers"""
+    def send_alert(self, alert: BudgetAlert):
+        """Send alert"""
         self.alerts.append(alert)
-        
         for handler in self.handlers:
             try:
                 handler(alert)
             except Exception as e:
-                print(f"Alert handler failed: {e}")
+                print(f"Alert handler error: {e}")
