@@ -1,25 +1,37 @@
-from .context_budget import ContextBudgetTracker, CUR_WARNING_THRESHOLD, CUR_CRITICAL_THRESHOLD
+"""
+agentsre - SRE reliability for AI agents
+Author: Ajay Devineni
+License: MIT
+"""
 
-# v0.4.0: Orchestration and Alerting (OPTIONAL - new module)
-try:
-    from .orchestration import (
-        FintechSREOrchestrator,
-        AlertManager,
-        PrometheusExporter,
-        AgentRole,
-        AutonomyLevel,
-    )
-except ImportError:
-    pass  # Orchestration module is optional
-from .pre_action_gate import PreActionSREGate, SREGateResult
+__version__ = "0.5.0"
 
-# v0.5.0: Cost Optimization Module (NEW)
 try:
-    from .cost_optimizer import (
-        CostTracker,
-        CostMetrics,
-        CostOptimizer,
-        OptimizationSuggestion,
-    )
-except ImportError:
-    pass  # Cost optimizer module is optional
+    from .metrics import AgentSLICollector, TaskRecord
+except:
+    pass
+
+try:
+    from .cloudwatch import CloudWatchPublisher
+except:
+    pass
+
+try:
+    from .validators import A2ASemanticValidator
+except:
+    pass
+
+try:
+    from .circuit_breaker import AgentChainCircuitBreaker
+except:
+    pass
+
+try:
+    from .cost_optimizer import CostTracker, CostMetrics, CostOptimizer
+except:
+    pass
+
+try:
+    from .orchestration import FintechSREOrchestrator, AlertManager
+except:
+    pass
