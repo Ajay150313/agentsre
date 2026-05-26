@@ -7,7 +7,7 @@ Author: Ajay Devineni
 License: MIT
 """
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 __author__ = "Ajay Devineni"
 
 # Import classes but catch import errors gracefully
