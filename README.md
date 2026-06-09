@@ -340,3 +340,14 @@ optimizer = CostOptimizer(tracker)
 suggestions = optimizer.analyze()
 ```
 
+
+## Architecture Mapping — Google SRE AI Whitepaper (May 2026)
+
+| Google Component | agentsre Module | Description |
+|---|---|---|
+| Actus (execution guardrails) | `pre_action_gate.py` | Error budget + AQDD + HER gate before action |
+| IRM Analyzer (eval pipelines) | `eval_pipeline.py` | DQR trend + regression detection |
+| AI Operator (agent governance) | `aro.py` + `sprawl_registry.py` | ARO registration + fleet PRR |
+| Human operational memory | `reasoning_trace.py` | RTD traces as ground truth corpus |
+
+Reference: https://sre.google/resources/practices-and-processes/ai-engineering-reliable-operations/
