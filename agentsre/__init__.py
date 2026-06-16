@@ -50,3 +50,10 @@ from .automation_complacency import (
     VerificationStatus,
     Severity,
 )
+from .dependency_risk import (
+    ADRSCalculator,
+    ADRSSignals,
+    ADRSResult,
+    calculate_adrs,
+    adrs_from_defaults,
+)
