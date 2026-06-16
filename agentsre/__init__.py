@@ -44,3 +44,9 @@ from .aos_reliability import (
     GateFailureMode,
     CircuitState
 )
+from .automation_complacency import (
+    ACRTracker,
+    VerificationRecord,
+    VerificationStatus,
+    Severity,
+)
