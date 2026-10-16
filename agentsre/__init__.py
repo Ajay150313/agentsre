@@ -50,3 +50,4 @@ from .automation_complacency import (
     VerificationStatus,
     Severity,
 )
+from .idempotency import IdempotencyGuard, GuardDecision, action_key
