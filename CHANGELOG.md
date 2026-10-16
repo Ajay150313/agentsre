@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- `IdempotencyGuard` and `DuplicateActionRate` for irreversible agent actions
+- Example: `examples/idempotency_guard.py`
+
 ## 0.1.0 - April 22, 2025
 
 First release. Reliability instrumentation for AI agents in production.
