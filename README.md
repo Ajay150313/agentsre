@@ -11,6 +11,8 @@
 
 ## Latest
 
+🛡 **IdempotencyGuard** — block a retried write that already succeeded. `DuplicateActionRate` is the SLI dashboards miss.
+
 📝 **[Agent Sprawl is Your Next Production Incident](https://www.linkedin.com/posts/ajay-devineni_agenticai-sre-reliability-ugcPost-7455786901673902080-BCRM)** — LinkedIn (April 30, 2026)
 
 📄 **[Governing Agent Sprawl on AWS](https://builder.aws.com/content/3D6NGmNr6iymtUqZn6lSWcvY09X/governing-agent-sprawl-on-aws-fleet-inventory-framework-canary-and-deprecation-alerting-for-multi-model-bedrock-deployments)** — AWS Community Builders
