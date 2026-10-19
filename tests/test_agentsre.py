@@ -79,11 +79,12 @@ class TestAgentSLICollector:
 
     def test_tie_drift_detected(self):
         c = AgentSLICollector()
-        # Establish baseline of 2 tool calls
+        # Establish baseline of 2 tool calls, then take the first reading
         for _ in range(20):
             c.record(make_task(tool_calls=2))
-        # Spike to 4 tool calls (2x baseline)
-        for _ in range(10):
+        c.collect("payment-routing")
+        # Spike to 4 tool calls; the window mean rises well above baseline
+        for _ in range(40):
             c.record(make_task(tool_calls=4))
         results = c.collect("payment-routing")
         tie = next(r for r in results if r.name == "ToolInvocationEfficiency")

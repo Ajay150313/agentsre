@@ -115,8 +115,11 @@ class A2ASemanticValidator:
     ) -> ValidationResult:
         """Run all three validation layers and return a ValidationResult."""
 
+        key = f"{sub_agent_id}:{task_class}"
+
         # Layer 1: empty output guard
         if not task_result or not task_result.get("output"):
+            self._baselines.setdefault(key, []).append(0.0)
             return ValidationResult(
                 valid=False,
                 confidence=0.0,
@@ -136,6 +139,7 @@ class A2ASemanticValidator:
                 if f not in output
             ]
             if missing:
+                self._baselines.setdefault(key, []).append(0.0)
                 return ValidationResult(
                     valid=False,
                     confidence=0.0,
@@ -152,6 +156,7 @@ class A2ASemanticValidator:
                         f"{fld}: expected {expected_type}, got {type(output[fld])}"
                     )
             if type_errors:
+                self._baselines.setdefault(key, []).append(0.0)
                 return ValidationResult(
                     valid=False,
                     confidence=0.0,
@@ -165,7 +170,6 @@ class A2ASemanticValidator:
         confidence = self._behavioral_confidence(
             task_result, sub_agent_id, task_class
         )
-        key = f"{sub_agent_id}:{task_class}"
         self._baselines.setdefault(key, []).append(confidence)
 
         if confidence < self.behavioral_threshold:

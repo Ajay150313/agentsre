@@ -47,7 +47,7 @@ def demo_cost_tracking():
     print(f"   Total calls: {metrics.total_calls}")
     print(f"   Successful: {metrics.successful_calls}")
     print(f"   Failed: {metrics.failed_calls}")
-    print(f"   Cost per successful call: ${metrics.cost_per_successful_call:.4f}")
+    print(f"   Cost per successful call: ${metrics.cost_per_successful_call():.4f}")
     
     # Scenario 2: Classification agent
     print("\n" + "=" * 80)
@@ -104,7 +104,7 @@ def demo_cost_tracking():
     print("KEY INSIGHT")
     print("=" * 80)
     
-    total_cost = summary["total_cost"].replace("$", "").replace(",", "")
+    total_cost = f"{float(str(summary['total_cost']).replace('$', '').replace(',', '')):.4f}"
     print(f"""
 The classifier agent spent ${total_cost} for:
 - 5 complex queries with Claude Opus (expensive)

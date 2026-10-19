@@ -153,8 +153,10 @@ class DecisionQualityRate:
             return self._empty(task_class)
 
         value = statistics.mean(r.decision_confidence for r in records) * 100
-        self._baseline.update(task_class, self.name, value)
+        # Compare against the baseline built from *previous* windows, then fold
+        # this window in. Updating first would dilute any spike before it is seen.
         baseline = self._baseline.get(task_class, self.name)
+        self._baseline.update(task_class, self.name, value)
         drift = (value / baseline) if baseline else None
 
         return SLIResult(
@@ -209,8 +211,10 @@ class ToolInvocationEfficiency:
             return self._empty(task_class)
 
         value = statistics.mean(r.tool_calls for r in records)
-        self._baseline.update(task_class, self.name, value)
+        # Compare against the baseline built from *previous* windows, then fold
+        # this window in. Updating first would dilute any spike before it is seen.
         baseline = self._baseline.get(task_class, self.name)
+        self._baseline.update(task_class, self.name, value)
         drift = (value / baseline) if baseline else None
         threshold_abs = (baseline * self.drift_multiplier) if baseline else float("inf")
 
@@ -268,8 +272,10 @@ class HumanEscalationRate:
 
         escalated = sum(1 for r in records if r.required_escalation)
         value = (escalated / len(records)) * 100
-        self._baseline.update(task_class, self.name, value)
+        # Compare against the baseline built from *previous* windows, then fold
+        # this window in. Updating first would dilute any spike before it is seen.
         baseline = self._baseline.get(task_class, self.name)
+        self._baseline.update(task_class, self.name, value)
         drift = (value / baseline) if baseline and baseline > 0 else None
 
         return SLIResult(
@@ -330,8 +336,10 @@ class ApprovalQueueDepthDrift:
         pending = sum(1 for r in records if r.pending_approval and not r.completed)
         value = float(pending)
 
-        self._baseline.update(task_class, self.name, value)
+        # Compare against the baseline built from *previous* windows, then fold
+        # this window in. Updating first would dilute any spike before it is seen.
         baseline = self._baseline.get(task_class, self.name)
+        self._baseline.update(task_class, self.name, value)
         drift = (value / baseline) if baseline and baseline > 0 else None
         threshold_abs = (baseline * self.drift_multiplier) if baseline else float("inf")
 

@@ -290,24 +290,6 @@ MIT © [Ajay Devineni](https://linkedin.com/in/ajay-devineni)
 
 ---
 
-## 🎯 Enterprise Feature: Fintech SRE Orchestration
-
-Production system for coordinating AI agents in payment processing.
-
-**What it does:**
-- Monitors 5+ agents with semantic SLIs (DQR, TIE, HER, AQDD)
-- Automatically constrains autonomy when semantic drift detected
-- Publishes to AWS CloudWatch
-- Validates transactions against compliance rules
-- Tracks cost and ROI per agent
-
-**Why it matters:**
-Catches semantic failures (wrong decisions despite HTTP 200) 48+ hours before traditional SLIs fire.
-
-See [FINTECH_ORCHESTRATION.md](agentsre/FINTECH_ORCHESTRATION.md) for details.
-
----
-
 ## v0.5.0: Cost Optimization Module
 
 Production cost tracking for AI agents.
