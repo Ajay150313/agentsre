@@ -4,37 +4,13 @@ Author: Ajay Devineni
 License: MIT
 """
 
-__version__ = "0.5.0"
+__version__ = "0.5.1"
 
-try:
-    from .metrics import AgentSLICollector, TaskRecord
-except:
-    pass
-
-try:
-    from .cloudwatch import CloudWatchPublisher
-except:
-    pass
-
-try:
-    from .validators import A2ASemanticValidator
-except:
-    pass
-
-try:
-    from .circuit_breaker import AgentChainCircuitBreaker
-except:
-    pass
-
-try:
-    from .cost_optimizer import CostTracker, CostMetrics, CostOptimizer
-except:
-    pass
-
-try:
-    from .orchestration import FintechSREOrchestrator, AlertManager
-except:
-    pass
+from .metrics import AgentSLICollector, TaskRecord
+from .cloudwatch import CloudWatchPublisher
+from .validators import A2ASemanticValidator
+from .circuit_breaker import AgentChainCircuitBreaker, CircuitState, CircuitStatus
+from .cost_optimizer import CostTracker, CostMetrics, CostOptimizer
 from .tool_evaluation import ToolEvaluationScore, QuestionScore
 from .eval_pipeline import EvalPipeline, EvalRun, EvalCase
 from .aos_reliability import (
@@ -42,7 +18,7 @@ from .aos_reliability import (
     AOSCircuitBreaker,
     AuditRecord,
     GateFailureMode,
-    CircuitState
+    CircuitState as AOSCircuitState,
 )
 from .automation_complacency import (
     ACRTracker,

@@ -1,10 +1,10 @@
 [build-system]
 requires = ["setuptools>=68", "wheel"]
-build-backend = "setuptools.backends.legacy:build"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "agentsre"
-version = "0.1.0"
+version = "0.5.1"
 description = "SRE reliability instrumentation for agentic AI systems — DQR, TIE, HER, AQDD"
 readme = "README.md"
 license = { text = "MIT" }
@@ -29,12 +29,15 @@ dependencies = []
 
 [project.optional-dependencies]
 aws = ["boto3>=1.26"]
-dev = ["pytest>=7", "pytest-cov", "black", "ruff", "mypy"]
+dev = ["pytest>=7", "pytest-cov", "ruff", "mypy"]
 
 [project.urls]
-Homepage = "https://github.com/ajay-devineni/agentsre"
-Documentation = "https://github.com/ajay-devineni/agentsre#readme"
-"Bug Tracker" = "https://github.com/ajay-devineni/agentsre/issues"
+Homepage = "https://github.com/Ajay150313/agentsre"
+Documentation = "https://github.com/Ajay150313/agentsre#readme"
+"Bug Tracker" = "https://github.com/Ajay150313/agentsre/issues"
 
 [tool.setuptools.packages.find]
 include = ["agentsre*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

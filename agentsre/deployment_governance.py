@@ -1,3 +1,4 @@
+"""
 AI Code Change Governance — the double-exposure reliability layer.
  
 Governs the interaction between AI-generated code changes and
