@@ -280,6 +280,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
 
 ---
 
+## Use with AI coding agents
+
+An agent skill that teaches coding agents how to use this library is in [`skills/agentsre/SKILL.md`](skills/agentsre/SKILL.md).
+
 ## License
 
 MIT © [Ajay Devineni](https://linkedin.com/in/ajay-devineni)
