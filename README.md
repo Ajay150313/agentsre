@@ -31,6 +31,15 @@ Your current observability stack won't tell you.
 
 ---
 
+
+## Architecture
+
+![agentsre architecture](docs/assets/architecture.svg)
+
+An agent can return HTTP 200 and still fail. `TaskRecord` feeds four semantic SLIs.
+`IdempotencyGuard`, the A2A validator and the circuit breaker sit in front of anything
+that writes or fans out to another agent. CloudWatch (optional extra) is a sink, not the source of truth.
+
 ## Why This Exists: A Real Postmortem
 
 An AI agent in a production environment ran for 6 hours making bad decisions before it caused an outage.
